@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Slugline</title>
+<style id="css">
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--chrome:#eef0f2;--desk:#dde1e6;--paper:#fffffd;--ink:#14171a;--mute:#66707c;--line:#cdd2d8;--acc:#2f62c9;--hi:#dfe8fa;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--chrome:#16181b;--desk:#0e1012;--paper:#1c1f23;--ink:#e8e6df;--mute:#8b949e;--line:#2c3137;--acc:#86a9f2;--hi:#26324a;color-scheme:dark}}
+:root[data-theme=dark]{--chrome:#16181b;--desk:#0e1012;--paper:#1c1f23;--ink:#e8e6df;--mute:#8b949e;--line:#2c3137;--acc:#86a9f2;--hi:#26324a;color-scheme:dark}
+html,body{height:100%;margin:0}
+body{height:var(--vh,100%);background:var(--chrome);color:var(--ink);font:14px/1.3 "Avenir Next","Segoe UI",system-ui,sans-serif;overflow:hidden}
+#app{height:100%;display:flex;flex-direction:column}
+button{font:inherit;color:inherit;background:none;border:0;border-radius:6px;padding:6px 10px;min-height:34px;cursor:pointer}
+button:hover{background:var(--hi)}
+button:focus-visible,input:focus-visible,#ed:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+#hd{display:flex;align-items:center;gap:4px;padding:4px 8px;border-bottom:1px solid var(--line)}
+#ti{flex:1;min-width:0;background:none;border:0;color:inherit;font:inherit;font-weight:600;font-size:15px;padding:6px}
+#st{color:var(--mute);font-size:12px;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+#hd .file-action{font-weight:600;border:1px solid var(--line);padding:6px 12px}
+#hd #sv{background:var(--acc);color:white;border-color:var(--acc)}
+#hd #sv:hover{filter:brightness(1.08)}
+@media(max-width:600px){#hd{gap:2px;padding:4px}#hd .file-action{padding:6px 7px;font-size:12px}#st{display:none}#ti{font-size:14px}}
+#mw{flex:1;display:flex;min-height:0;position:relative}
+#sd{display:none;width:260px;flex:none;overflow:auto;border-right:1px solid var(--line);padding:8px;background:var(--chrome)}
+#sd.open{display:block}
+#sd h3{font-size:12px;color:var(--mute);font-weight:600;margin:14px 6px 4px}
+.r{display:flex;align-items:center}
+.r .g{flex:1;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.r .a{padding:4px 6px;min-height:28px;color:var(--mute);font-size:12px}
+#sd .on{background:var(--hi)}
+.nt{color:var(--mute);font-size:12px;margin:6px}
+#ds{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:18px 8px 45vh;background:var(--desk)}
+#ed{box-sizing:content-box;width:60ch;max-width:calc(100% - 7ch);margin:0 auto;padding:3em 3ch 6em;min-height:70vh;background:var(--paper);box-shadow:0 1px 4px #0003;outline:0;font:16px/1.2 "Courier Prime","Courier New",Courier,monospace}
+#ed.empty p:first-child::before{content:"Start writing, or type INT. to open a scene.";color:var(--mute)}
+#ed p{margin:0 0 1.2em;white-space:pre-wrap}
+#ed p:first-child{margin-top:0}
+#ed p[data-t=scene],#ed p[data-t=char],#ed p[data-t=trans],#ed p[data-t=shot]{text-transform:uppercase}
+#ed p[data-t=scene]{margin-top:2.4em;font-weight:700;break-after:avoid}
+#ed p[data-t=shot]{margin-top:1.2em}
+#ed p[data-t=char]{margin:0 0 0 22ch;break-after:avoid}
+#ed p[data-t=paren]{margin:0 24ch 0 16ch;break-after:avoid}
+#ed p[data-t=dial]{margin:0 15ch 1.2em 10ch}
+#ed p[data-t=trans]{text-align:right}
+#tb{display:flex;gap:2px;padding:4px 6px;border-top:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+#tb button{flex:none;font-size:13px;white-space:nowrap}
+#tb .on{background:var(--acc);color:var(--paper)}
+#sg{position:fixed;z-index:6;display:flex;gap:4px;background:var(--chrome);border:1px solid var(--line);border-radius:8px;padding:3px;font-family:"Courier New",monospace}
+#mx{position:fixed;z-index:7;right:8px;top:calc(env(safe-area-inset-top,0px) + 44px);display:flex;flex-direction:column;background:var(--chrome);border:1px solid var(--line);border-radius:8px;padding:4px;box-shadow:0 6px 24px #0004}
+#mx button{text-align:left}
+#tt{position:fixed;z-index:9;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 64px);background:var(--ink);color:var(--paper);padding:8px 12px;border-radius:8px;max-width:88vw}
+#xf{display:none;position:fixed;z-index:6;top:calc(env(safe-area-inset-top,0px) + 6px);right:8px;background:var(--chrome);border:1px solid var(--line)}
+[hidden]{display:none!important}
+.fc #hd,.fc #sd,.fc #tb{display:none}
+.fc #xf{display:block}
+@media(max-width:899px){#sd{position:absolute;z-index:5;left:0;top:0;bottom:0;width:min(300px,86vw);box-shadow:4px 0 20px #0004}}
+@media(max-width:700px){#ds{padding:10px 6px 45vh}#ed{width:auto;max-width:none;font-size:14px;padding:18px 10px 40px}
+#ed p[data-t=char]{margin-left:12ch}#ed p[data-t=paren]{margin:0 6ch 0 8ch}#ed p[data-t=dial]{margin:0 3ch 1.2em 4ch}}
+@media print{
+@page{size:letter;margin:1in 1in 1in 1.5in;@top-right{content:counter(page) ".";font:12pt "Courier New",monospace}}
+:root{padding:0}
+html,body{height:auto;overflow:visible;background:#fff}
+#hd,#sd,#tb,#sg,#mx,#tt,#xf{display:none!important}
+#app,#mw{display:block;height:auto}
+#ds{overflow:visible;padding:0;background:none}
+#ed{width:auto;max-width:none;margin:0;padding:0;min-height:0;box-shadow:none;background:#fff;color:#000;font:12pt/1 "Courier New",Courier,monospace}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<header id="hd">
+<button id="mn" aria-label="Show scenes and characters">☰</button>
+<input id="ti" aria-label="Screenplay title" placeholder="Untitled screenplay" autocomplete="off">
+<button id="op" class="file-action">Open</button>
+<button id="sv" class="file-action">Save</button>
+<button id="sa" class="file-action">Save As</button>
+<span id="st" role="status" aria-live="polite">New document</span>
+<button id="ex" aria-haspopup="true">Export</button>
+<button id="th" aria-label="Switch light or dark theme">◐</button>
+<button id="fc" aria-label="Focus mode">⤢</button>
+</header>
+<div id="mw">
+<aside id="sd" aria-label="Navigator">
+<h3>Scenes</h3><div id="sc"></div>
+<h3>Characters</h3><div id="ch"></div>
+<p class="nt">Enter moves to the next element. Shift+Enter starts another paragraph of the same kind. Tab and Shift+Tab change the current element; Alt+1 to 7 set it directly.</p>
+</aside>
+<div id="ds"><div id="ed" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Screenplay"></div></div>
+</div>
+<nav id="tb" aria-label="Element type"></nav>
+</div>
+<div id="sg" hidden></div>
+<div id="mx" hidden></div>
+
+<div id="tt" role="status" hidden></div>
+<button id="xf">Exit focus</button>
+<input type="file" id="fi" accept=".slugline,.fountain,.txt,.fdx,.xml,.json" hidden>
+<script>
+const $=s=>document.querySelector(s),ed=$('#ed'),R=document.documentElement,
+T=['scene','action','char','paren','dial','trans','shot'],
+L={scene:'Scene',action:'Action',char:'Character',paren:'Parenthetical',dial:'Dialogue',trans:'Transition',shot:'Shot'},
+FT={scene:'Scene Heading',action:'Action',char:'Character',paren:'Parenthetical',dial:'Dialogue',trans:'Transition',shot:'Shot'},
+SC=/^(INT|EXT|EST|INT\.?\/EXT|EXT\.?\/INT|I\/E)(\.| )/i,
+TR=/^(FADE (IN|OUT)\.?|FADE TO BLACK\.?|[A-Z][A-Z .']* TO:|THE END\.?)$/,
+nm=s=>s.replace(/\s*\(.*\)\s*$/,'').trim().toUpperCase(),
+isCue=x=>/^[A-Z0-9][A-Z0-9 '.\-]{0,36}(\s*\([^)]*\))?$/.test(x)&&/[A-Z]/.test(x)&&!/\.$/.test(x.replace(/\s*\([^)]*\)$/,''))&&!SC.test(x)&&!TR.test(x),
+esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),
+J=s=>{try{return JSON.parse(s)}catch(e){return null}},
+ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v);return 1}catch(e){return 0}},d:k=>{try{localStorage.removeItem(k)}catch(e){}}},
+uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+stat=t=>$('#st').textContent=t,
+btn=(l,f,c,a)=>{const b=document.createElement('button');b.textContent=l;b.onclick=f;if(c)b.className=c;if(a)b.setAttribute('aria-label',a);return b},
+note=t=>{const p=document.createElement('p');p.className='nt';p.textContent=t;return p},
+mk=(t,x)=>{const p=document.createElement('p');p.dataset.t=t;if(x)p.textContent=x;else p.appendChild(document.createElement('br'));return p},
+paras=()=>[...ed.children],ser=()=>paras().map(p=>[p.dataset.t||'action',p.textContent]),
+slug=()=>(cur.title||'screenplay').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-')||'screenplay';
+let cur=null,busy,tS,tR,tM,sgN=[],fileHandle=null,fileName='',dirty=false;
+
+function toast(m){const t=$('#tt');t.textContent=m;t.hidden=false;clearTimeout(tM);tM=setTimeout(()=>t.hidden=true,6500)}
+function docData(){flush();return JSON.stringify({format:'slugline',version:1,title:cur.title||'',p:ser(),updatedAt:new Date().toISOString()},null,2)}
+function safeName(){return (cur.title||'Untitled screenplay').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-')||'screenplay'}
+function fileNameForDoc(){return safeName()+'.slugline'}
+function hasPicker(){return typeof window.showSaveFilePicker==='function'}
+function flush(){
+ clearTimeout(tS);
+ if(!cur)return;
+ cur.p=ser();cur.ts=Date.now();
+ ls.s('slugline:autosave',JSON.stringify(cur));
+}
+function sched(){
+ clearTimeout(tR);tR=setTimeout(refresh,250);
+ clearTimeout(tS);
+ dirty=true;
+ stat('Unsaved changes');
+ tS=setTimeout(flush,600);
+}
+function load(d,handle=null,name=''){
+ cur=d;fileHandle=handle;fileName=name||d.title||'Untitled screenplay';
+ ed.replaceChildren(...(d.p&&d.p.length?d.p:[['action','']]).map(([t,x])=>mk(T.includes(t)?t:'action',x)));
+ ed.contentEditable='true';
+ $('#ti').value=d.title||'';
+ dirty=false;norm();refresh();stat('Opened');
+}
+async function writeHandle(){
+ if(!cur||!fileHandle)return false;
+ flush();
+ const snapshot=docData();
+ try{
+  const w=await fileHandle.createWritable();
+  await w.write(new Blob([snapshot],{type:'application/json'}));
+  await w.close();
+  dirty=false;
+  stat('Saved');
+  return true;
+ }catch(e){
+  return await saveAs();
+ }
+}
+async function saveAs(){
+ if(!cur)return false;
+ flush();
+ const name=fileNameForDoc(),data=docData();
+ if(hasPicker()){
+  try{
+   const h=await window.showSaveFilePicker({
+    suggestedName:name,
+    types:[{description:'Slugline screenplay',accept:{'application/json':['.slugline']}}]
+   });
+   fileHandle=h;fileName=h.name||name;
+   const w=await h.createWritable();
+   await w.write(new Blob([data],{type:'application/json'}));
+   await w.close();
+   dirty=false;
+   stat('Saved');
+   return true;
+  }catch(e){
+   if(e&&e.name==='AbortError')return false;
+  }
+ }
+ downloadBlob(name,new Blob([data],{type:'application/json'}));
+ dirty=false;
+ stat('Saved to Files');
+ toast('File downloaded. Choose Save to Files to store it in iCloud or device storage.');
+ return true;
+}
+function newDoc(){
+ if(dirty&&!confirm('This document has unsaved changes. Create a new document and discard them?'))return;
+ fileHandle=null;fileName='';dirty=false;
+ cur={id:uid(),title:'',p:[['action','']],ts:Date.now()};
+ $('#ti').value='';
+ ed.replaceChildren(mk('action',''));
+ ed.contentEditable='true';
+ refresh();stat('New document');ed.focus();
+}
+async function saveCurrent(){
+ if(!cur)return false;
+ flush();
+ if(fileHandle)return await writeHandle();
+ return await saveAs();
+}
+async function openWithPicker(){
+ if(dirty&&!confirm('This document has unsaved changes. Open another file and discard them?'))return;
+ if(typeof window.showOpenFilePicker==='function'){
+  try{
+   const [h]=await window.showOpenFilePicker({
+    multiple:false,
+    types:[
+     {description:'Slugline screenplay',accept:{'application/json':['.slugline','.json']}},
+     {description:'Screenplay text',accept:{'text/plain':['.fountain','.txt']}},
+     {description:'Final Draft',accept:{'application/xml':['.fdx','.xml']}}
+    ]
+   });
+   const f=await h.getFile();
+   const ext=(f.name.split('.').pop()||'').toLowerCase();
+   await readDocumentFile(f,['slugline','json'].includes(ext)?h:null);
+   return;
+  }catch(e){
+   if(e&&e.name==='AbortError')return;
+  }
+ }
+ $('#fi').click();
+}
+function downloadBlob(name,blob){
+ const u=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=u;a.download=name;document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(u),30000);
+}
+async function out(name,data){
+ downloadBlob(name,new Blob([data],{type:'application/octet-stream'}));
+}
+function pr(){toast('Choose Save as PDF in the print dialog.');try{print()}catch(e){}}
+$('#fi').onchange=async e=>{
+ const f=e.target.files[0];e.target.value='';if(f)await readDocumentFile(f,null)
+};
+
+/* Interface */
+const tb=$('#tb');
+T.forEach(t=>{const b=btn(L[t],()=>setType(t));b.dataset.t=t;tb.append(b)});
+tb.append(btn('Undo',()=>document.execCommand('undo')),btn('Redo',()=>document.execCommand('redo')));
+tb.onmousedown=$('#sg').onmousedown=e=>e.preventDefault();
+[['Fountain (.fountain)',()=>out(safeName()+'.fountain',fountain())],['Final Draft (.fdx)',()=>out(safeName()+'.fdx',toFdx())],['PDF: print or save',pr]]
+ .forEach(([l,f])=>$('#mx').append(btn(l,()=>{$('#mx').hidden=true;f()})));
+$('#ex').onclick=e=>{e.stopPropagation();$('#mx').hidden=!$('#mx').hidden};
+document.addEventListener('click',e=>{if(!e.target.closest('#mx'))$('#mx').hidden=true});
+$('#mn').onclick=()=>$('#sd').classList.toggle('open');
+$('#op').onclick=()=>openWithPicker();
+$('#sv').onclick=()=>saveCurrent();
+$('#sa').onclick=()=>saveAs();
+
+$('#ti').oninput=e=>{if(!cur)return;cur.title=e.target.value;if(!fileHandle)fileName=fileNameForDoc();sched()};
+$('#fc').onclick=()=>document.body.classList.add('fc');
+$('#xf').onclick=()=>document.body.classList.remove('fc');
+document.addEventListener('keydown',e=>{
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='o'){e.preventDefault();openWithPicker()}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='n'){e.preventDefault();newDoc()}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){
+  e.preventDefault();
+  if(e.shiftKey)saveAs();else saveCurrent();
+ }
+ if(e.key==='Escape'){document.body.classList.remove('fc');$('#mx').hidden=true}
+});
+$('#th').onclick=()=>{const v=(R.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'))==='dark'?'light':'dark';R.dataset.theme=v;ls.s('sw:th',v)};
+if(ls.g('sw:th'))R.dataset.theme=ls.g('sw:th');
+if(innerWidth>=900)$('#sd').classList.add('open');
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>{document.body.style.setProperty('--vh',visualViewport.height<innerHeight-120?visualViewport.height+'px':'');scrollTo(0,0)});
+try{document.execCommand('defaultParagraphSeparator',false,'p')}catch(e){}
+
+/* Initialize document: load from autosave if available or start new */
+const saved=ls.g('slugline:autosave');
+const initDoc=saved?J(saved):null;
+if(initDoc&&initDoc.p&&initDoc.p.length){
+ load(initDoc,null,'');
+ stat('Restored from browser storage');
+}else{
+ cur={id:uid(),title:'',p:[['action','']],ts:Date.now()};
+ ed.contentEditable='true';
+ ed.replaceChildren(mk('action',''));
+ refresh();
+ stat('New document');
+}
+</script>
+</body>
+</html>
