@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Slugline</title>
+<style id="css">
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--chrome:#eef0f2;--desk:#dde1e6;--paper:#fffffd;--ink:#14171a;--mute:#66707c;--line:#cdd2d8;--acc:#2f62c9;--hi:#dfe8fa;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--chrome:#16181b;--desk:#0e1012;--paper:#1c1f23;--ink:#e8e6df;--mute:#8b949e;--line:#2c3137;--acc:#86a9f2;--hi:#26324a;color-scheme:dark}}
+:root[data-theme=dark]{--chrome:#16181b;--desk:#0e1012;--paper:#1c1f23;--ink:#e8e6df;--mute:#8b949e;--line:#2c3137;--acc:#86a9f2;--hi:#26324a;color-scheme:dark}
+html,body{height:100%;margin:0}
+body{height:var(--vh,100%);background:var(--chrome);color:var(--ink);font:14px/1.3 "Avenir Next","Segoe UI",system-ui,sans-serif;overflow:hidden}
+#app{height:100%;display:flex;flex-direction:column}
+button{font:inherit;color:inherit;background:none;border:0;border-radius:6px;padding:6px 10px;min-height:34px;cursor:pointer}
+button:hover{background:var(--hi)}
+button:focus-visible,input:focus-visible,#ed:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+#hd{display:flex;align-items:center;gap:4px;padding:4px 8px;border-bottom:1px solid var(--line)}
+#ti{flex:1;min-width:0;background:none;border:0;color:inherit;font:inherit;font-weight:600;font-size:15px;padding:6px}
+#st{color:var(--mute);font-size:12px;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+#hd .file-action{font-weight:600;border:1px solid var(--line);padding:6px 12px}
+#hd #sv{background:var(--acc);color:white;border-color:var(--acc)}
+#hd #sv:hover{filter:brightness(1.08)}
+@media(max-width:600px){#hd{gap:2px;padding:4px}#hd .file-action{padding:6px 7px;font-size:12px}#st{display:none}#ti{font-size:14px}}
+#mw{flex:1;display:flex;min-height:0;position:relative}
+#sd{display:none;width:260px;flex:none;overflow:auto;border-right:1px solid var(--line);padding:8px;background:var(--chrome)}
+#sd.open{display:block}
+#sd h3{font-size:12px;color:var(--mute);font-weight:600;margin:14px 6px 4px}
+.r{display:flex;align-items:center}
+.r .g{flex:1;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.r .a{padding:4px 6px;min-height:28px;color:var(--mute);font-size:12px}
+#sd .on{background:var(--hi)}
+.nt{color:var(--mute);font-size:12px;margin:6px}
+#ds{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:18px 8px 45vh;background:var(--desk)}
+#ed{box-sizing:content-box;width:60ch;max-width:calc(100% - 7ch);margin:0 auto;padding:3em 3ch 6em;min-height:70vh;background:var(--paper);box-shadow:0 1px 4px #0003;outline:0;font:16px/1.2 "Courier Prime","Courier New",Courier,monospace}
+#ed.empty p:first-child::before{content:"Start writing, or type INT. to open a scene.";color:var(--mute)}
+#ed p{margin:0 0 1.2em;white-space:pre-wrap}
+#ed p:first-child{margin-top:0}
+#ed p[data-t=scene],#ed p[data-t=char],#ed p[data-t=trans],#ed p[data-t=shot]{text-transform:uppercase}
+#ed p[data-t=scene]{margin-top:2.4em;font-weight:700;break-after:avoid}
+#ed p[data-t=shot]{margin-top:1.2em}
+#ed p[data-t=char]{margin:0 0 0 22ch;break-after:avoid}
+#ed p[data-t=paren]{margin:0 24ch 0 16ch;break-after:avoid}
+#ed p[data-t=dial]{margin:0 15ch 1.2em 10ch}
+#ed p[data-t=trans]{text-align:right}
+#tb{display:flex;gap:2px;padding:4px 6px;border-top:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+#tb button{flex:none;font-size:13px;white-space:nowrap}
+#tb .on{background:var(--acc);color:var(--paper)}
+#sg{position:fixed;z-index:6;display:flex;gap:4px;background:var(--chrome);border:1px solid var(--line);border-radius:8px;padding:3px;font-family:"Courier New",monospace}
+#mx{position:fixed;z-index:7;right:8px;top:calc(env(safe-area-inset-top,0px) + 44px);display:flex;flex-direction:column;background:var(--chrome);border:1px solid var(--line);border-radius:8px;padding:4px;box-shadow:0 6px 24px #0004}
+#mx button{text-align:left}
+#tt{position:fixed;z-index:9;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 64px);background:var(--ink);color:var(--paper);padding:8px 12px;border-radius:8px;max-width:88vw}
+#xf{display:none;position:fixed;z-index:6;top:calc(env(safe-area-inset-top,0px) + 6px);right:8px;background:var(--chrome);border:1px solid var(--line)}
+[hidden]{display:none!important}
+.fc #hd,.fc #sd,.fc #tb{display:none}
+.fc #xf{display:block}
+@media(max-width:899px){#sd{position:absolute;z-index:5;left:0;top:0;bottom:0;width:min(300px,86vw);box-shadow:4px 0 20px #0004}}
+@media(max-width:700px){#ds{padding:10px 6px 45vh}#ed{width:auto;max-width:none;font-size:14px;padding:18px 10px 40px}
+#ed p[data-t=char]{margin-left:12ch}#ed p[data-t=paren]{margin:0 6ch 0 8ch}#ed p[data-t=dial]{margin:0 3ch 1.2em 4ch}}
+@media print{
+@page{size:letter;margin:1in 1in 1in 1.5in;@top-right{content:counter(page) ".";font:12pt "Courier New",monospace}}
+:root{padding:0}
+html,body{height:auto;overflow:visible;background:#fff}
+#hd,#sd,#tb,#sg,#mx,#tt,#xf{display:none!important}
+#app,#mw{display:block;height:auto}
+#ds{overflow:visible;padding:0;background:none}
+#ed{width:auto;max-width:none;margin:0;padding:0;min-height:0;box-shadow:none;background:#fff;color:#000;font:12pt/1 "Courier New",Courier,monospace}
+}
+#dg{position:fixed;z-index:10;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;padding:16px}
+#dg>div{background:var(--chrome);border:1px solid var(--line);border-radius:10px;padding:16px;width:min(400px,100%)}
+#dm{margin:0 0 14px;font-size:15px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:55vh;overflow:auto;user-select:text}
+#db{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+#db .pri{background:var(--acc);color:#fff}
+#aul{display:block}
+@media print{#dg{display:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+<header id="hd">
+<button id="mn" aria-label="Show scenes and characters">☰</button>
+<input id="ti" aria-label="Screenplay title" placeholder="Untitled screenplay" autocomplete="off">
+<button id="op" class="file-action">Open</button>
+<button id="sv" class="file-action">Save</button>
+<button id="sa" class="file-action">Save As</button>
+<span id="st" role="status" aria-live="polite">New document</span>
+<button id="ex" aria-haspopup="true">Export</button>
+<button id="th" aria-label="Switch light or dark theme">◐</button>
+<button id="fc" aria-label="Focus mode">⤢</button>
+</header>
+<div id="mw">
+<aside id="sd" aria-label="Navigator">
+<div class="r"><button id="nw" class="g">New screenplay</button></div>
+<h3 id="rh" hidden>Recent files</h3><div id="rc" hidden></div>
+<label class="nt" id="aul" hidden><input type="checkbox" id="au"> AutoSave to the open file</label>
+<p class="nt" id="fsn"></p>
+<h3>Scenes</h3><div id="sc"></div>
+<h3>Characters</h3><div id="ch"></div>
+<p class="nt">Enter moves to the next element. Shift+Enter starts another paragraph of the same kind. Tab and Shift+Tab change the current element; Alt+1 to 7 set it directly.</p>
+</aside>
+<div id="ds"><div id="ed" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Screenplay"></div></div>
+</div>
+<nav id="tb" aria-label="Element type"></nav>
+</div>
+<div id="sg" hidden></div>
+<div id="mx" hidden></div>
+
+<div id="tt" role="status" hidden></div>
+<div id="dg" role="alertdialog" aria-modal="true" aria-labelledby="dm" hidden><div><p id="dm"></p><div id="db"></div></div></div>
+<button id="xf">Exit focus</button>
+<input type="file" id="fi" hidden>
+<script>
+const $=s=>document.querySelector(s),ed=$('#ed'),R=document.documentElement,
+T=['scene','action','char','paren','dial','trans','shot'],
+L={scene:'Scene',action:'Action',char:'Character',paren:'Parenthetical',dial:'Dialogue',trans:'Transition',shot:'Shot'},
+FT={scene:'Scene Heading',action:'Action',char:'Character',paren:'Parenthetical',dial:'Dialogue',trans:'Transition',shot:'Shot'},
+SC=/^(INT|EXT|EST|INT\.?\/EXT|EXT\.?\/INT|I\/E)(\.| )/i,
+TR=/^(FADE (IN|OUT)\.?|FADE TO BLACK\.?|[A-Z][A-Z .']* TO:|THE END\.?)$/,
+nm=s=>s.replace(/\s*\(.*\)\s*$/,'').trim().toUpperCase(),
+isCue=x=>/^[A-Z0-9][A-Z0-9 '.\-]{0,36}(\s*\([^)]*\))?$/.test(x)&&/[A-Z]/.test(x)&&!/\.$/.test(x.replace(/\s*\([^)]*\)$/,''))&&!SC.test(x)&&!TR.test(x),
+esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),
+J=s=>{try{return JSON.parse(s)}catch(e){return null}},
+ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v);return 1}catch(e){return 0}},d:k=>{try{localStorage.removeItem(k)}catch(e){}}},
+uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+stat=t=>$('#st').textContent=t,
+btn=(l,f,c,a)=>{const b=document.createElement('button');b.textContent=l;b.onclick=f;if(c)b.className=c;if(a)b.setAttribute('aria-label',a);return b},
+note=t=>{const p=document.createElement('p');p.className='nt';p.textContent=t;return p},
+mk=(t,x)=>{const p=document.createElement('p');p.dataset.t=t;if(x)p.textContent=x;else p.appendChild(document.createElement('br'));return p},
+paras=()=>[...ed.children],ser=()=>paras().map(p=>[p.dataset.t||'action',p.textContent]),
+slug=()=>(cur.title||'screenplay').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-')||'screenplay';
+let cur=null,busy,tS,tR,tM,tA,sgN=[],fileHandle=null,fileName='',dirty=false,ver=0,noted=0,dl=null,dgRes=null,saveChain=Promise.resolve(),
+D=window.desktop||null,fsOK=!window.desktop&&typeof window.showSaveFilePicker==='function'&&typeof window.showOpenFilePicker==='function',autoSave=ls.g('sw:auto')==='1',
+framed=(()=>{try{return window.top!==window}catch(e){return true}})();
+if(window.claude&&claude.use)claude.use('downloads').then(d=>{dl=d;envNote()},()=>{});
+
+function toast(m){const t=$('#tt');t.textContent=m;t.hidden=false;clearTimeout(tM);tM=setTimeout(()=>t.hidden=true,7000)}
+/* ---- Document state and file association ---- */
+function docData(){flush();return JSON.stringify({format:'slugline',version:1,title:cur.title||'',p:ser(),updatedAt:new Date().toISOString()},null,2)}
+function safeName(){return (cur.title||'Untitled screenplay').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-')||'screenplay'}
+function fileNameForDoc(){return safeName()+(fsOK?'.slugline':'.slugline.json')}
+function flush(){clearTimeout(tS);if(!cur)return;cur.p=ser();cur.ts=Date.now()}
+function mark(){document.title=(dirty?'• ':'')+(fileName||'Untitled screenplay')+' – Slugline';$('#sv').textContent=dirty?'Save •':'Save'}
+function sched(){
+ clearTimeout(tR);tR=setTimeout(refresh,250);clearTimeout(tS);
+ dirty=true;ver++;stat('Unsaved changes');mark();tS=setTimeout(flush,600);
+ clearTimeout(tA);if(autoSave&&fileHandle&&(fsOK||D))tA=setTimeout(()=>queue(()=>writeHandle(1)),2500)}
+function load(d,handle=null,name=''){
+ cur=d;fileHandle=handle;fileName=name||d.title||'Untitled screenplay';
+ ed.replaceChildren(...(d.p&&d.p.length?d.p:[['action','']]).map(([t,x])=>mk(T.includes(t)?t:'action',x)));
+ ed.contentEditable='true';$('#ti').value=d.title||'';
+ dirty=false;norm();refresh();stat('Opened '+fileName);mark();if(handle)remember(handle)}
+function queue(fn){saveChain=saveChain.catch(()=>{}).then(fn);return saveChain}
+
+/* ---- Word-style prompts (browser confirm() is blocked in many frames) ---- */
+function closeDg(v){$('#dg').hidden=true;const r=dgRes;dgRes=null;if(r)r(v)}
+function ask(msg,opts){return new Promise(res=>{dgRes=res;$('#dm').textContent=msg;$('#db').replaceChildren(...opts.map(([l,v,p])=>btn(l,()=>closeDg(v),p?'pri':'')));$('#dg').hidden=false;$('#db').firstChild.focus()})}
+async function guard(){
+ if(!dirty)return true;
+ const a=await ask('Do you want to save changes to '+(fileName||'this screenplay')+'?',[['Save','save',1],['Don’t save','no'],['Cancel','cancel']]);
+ if(a==='save')return await saveCurrent();
+ return a==='no'}
+
+/* ---- Saving: real file (File System Access) > viewer download > share sheet > download ---- */
+/* ---- Problem reporting (exact error names, no silent failures) ---- */
+let lastErr=null;
+const errText=e=>((e&&e.name)||'Error')+(e&&e.message?': '+e.message:'');
+const isFrameErr=e=>!!e&&(/frame/i.test(e.message||'')||(framed&&(e.name==='SecurityError'||e.name==='NotAllowedError')));
+function problem(stage,e){lastErr=stage+' - '+errText(e);stat('Save problem')}
+function diag(){return ['Slugline file diagnostics','Address: '+location.protocol+'//'+(location.host||'(local file)'),'Top-level window: '+(framed?'no, inside a frame':'yes'),'Secure context: '+window.isSecureContext,'Direct file saving available: '+fsOK,'Claude save prompt available: '+!!dl,'Last problem: '+(lastErr||'none'),'Browser: '+navigator.userAgent].join('\n')}
+
+/* ---- Saving: real file (File System Access) > viewer prompt > share sheet > download ---- */
+async function writeFile(h,data){
+ const blob=new Blob([data],{type:'application/json'}),w=await h.createWritable();
+ try{await w.write(blob);await w.close()}catch(e){try{await w.abort()}catch(_){}throw e}
+ const f=await h.getFile();
+ if(f.size!==blob.size)throw new Error('The file on disk is '+f.size+' bytes but '+blob.size+' were written')}
+async function recover(msg){
+ const ok=await exportCopy(safeName()+'.slugline.json',docData(),1);
+ toast(msg+(ok?' A copy was saved instead so nothing is lost.':'')+' Export > Save diagnostics shows details.');return ok}
+async function writeHandle(silent,fresh){
+ if(!cur||!fileHandle)return false;
+ const data=docData(),v=ver;
+ try{
+  if(D){await D.save(fileHandle.path,data);if(v===ver){dirty=false;stat('Saved to '+fileName)}else stat('Unsaved changes');mark();return true}
+  const o={mode:'readwrite'};
+  if(fileHandle.queryPermission&&await fileHandle.queryPermission(o)!=='granted'){
+   if(silent)return false;
+   if(await fileHandle.requestPermission(o)!=='granted'){toast('Saving needs permission to change this file. Press Save again and choose Allow, or use Save As.');return false}}
+  await writeFile(fileHandle,data);
+  if(v===ver){dirty=false;stat('Saved to '+fileName)}else stat('Unsaved changes');
+  mark();return true
+ }catch(e){
+  problem('Writing '+fileName,e);
+  if(silent)return false;
+  if(e&&(e.name==='NotFoundError'||e.name==='InvalidStateError')&&!fresh){fileHandle=null;toast('The file was moved or deleted. Choose where to save it again.');return await saveAs()}
+  if(fresh&&e&&e.name==='NotAllowedError'){fsOK=false;fileHandle=null;envNote()}
+  return await recover('The file '+fileName+' could not be written ('+errText(e)+').')}}
+async function exportCopy(name,data,keep){
+ const done=m=>{stat(m);if(!keep){dirty=false;fileName=name;mark();if(!noted){noted=1;toast('This browser cannot overwrite a file, so Save makes a new copy each time. For Word-style saving, open this app in Chrome or Edge on a computer.')}}else toast(m);return true};
+ if(dl){try{await dl.save({filename:name,data});return done('Saved a copy as '+name)}catch(e){problem('Claude save prompt',e);if(!e||e.code!=='declined')toast('The file could not be saved ('+((e&&e.code)||'error')+'). If you renamed it, keep the .json ending.');return false}}
+ if(matchMedia('(pointer:coarse)').matches&&navigator.canShare){
+  try{const f=new File([data],name,{type:'application/json'});
+   if(navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return done('Saved a copy as '+name)}}
+  catch(e){if(e&&e.name==='AbortError'){stat('Save cancelled');return false}}}
+ downloadBlob(name,new Blob([data],{type:'application/octet-stream'}));return done('Downloaded '+name)}
+async function saveAs(){
+ if(!cur)return false;flush();let h=null;
+ if(D){const v=ver;try{const r=await D.saveAs(fileHandle?fileName:safeName()+'.slugline',docData());if(!r)return false;
+  fileHandle={path:r.path};fileName=r.name;if(v===ver){dirty=false;stat('Saved to '+fileName)}else stat('Unsaved changes');mark();setTimeout(listRecent,300);return true}
+  catch(e){problem('Save As',e);toast('The file could not be saved: '+errText(e));return false}}
+ if(fsOK){
+  try{h=await window.showSaveFilePicker({id:'slugline',suggestedName:fileHandle?fileName:safeName()+'.slugline',types:[{description:'Slugline screenplay',accept:{'application/json':['.slugline']}}]})}
+  catch(e){if(e&&e.name==='AbortError')return false;
+   problem('Opening the save window',e);
+   if(isFrameErr(e)){fsOK=false;envNote()}else toast('The save window could not open ('+errText(e)+'). Saving a copy instead.')}}
+ if(h){fileHandle=h;fileName=h.name;remember(h);return await queue(()=>writeHandle(0,1))}
+ return await exportCopy(safeName()+'.slugline.json',docData())}
+async function saveCurrent(){if(!cur)return false;flush();if(fileHandle)return await queue(()=>writeHandle());return await saveAs()}
+function downloadBlob(name,blob){
+ const u=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=u;a.download=name;document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(u),30000)}
+async function out(name,data){
+ if(D){try{const q=await D.exportAs(name,data);if(q)toast('Exported '+q)}catch(e){problem('Export',e);toast('Export failed: '+errText(e))}return}
+ if(fsOK){
+  try{const h=await window.showSaveFilePicker({id:'slugline-export',suggestedName:name,types:[{description:'Export',accept:{'text/plain':['.'+name.split('.').pop()]}}]});
+   await writeFile(h,data);toast('Exported '+h.name);return}
+  catch(e){if(e&&e.name==='AbortError')return;problem('Export',e);if(isFrameErr(e)){fsOK=false;envNote()}else toast('Export could not use the save window ('+errText(e)+'). Downloading instead.')}}
+ if(dl){try{await dl.save({filename:name+'.txt',data});toast('Exported '+name+'.txt. Remove the .txt to use it elsewhere.')}catch(e){problem('Export',e);if(!e||e.code!=='declined')toast('Export failed ('+((e&&e.code)||'error')+').')}return}
+ downloadBlob(name,new Blob([data],{type:'application/octet-stream'}))}
+
+/* ---- New, Open, Recent ---- */
+async function newDoc(){
+ if(dirty&&!await guard())return;
+ fileHandle=null;fileName='';dirty=false;
+ cur={id:uid(),title:'',p:[['action','']],ts:Date.now()};
+ $('#ti').value='';ed.replaceChildren(mk('action',''));ed.contentEditable='true';
+ norm();refresh();stat('New document');mark();ed.focus()}
+async function openHandle(h){
+ const o={mode:'read'};
+ if(h.queryPermission&&await h.queryPermission(o)!=='granted'&&await h.requestPermission(o)!=='granted')return toast('Permission to read the file was refused.');
+ await readDocumentFile(await h.getFile(),h)}
+async function openDesktop(r){const ext=(r.name.split('.').pop()||'').toLowerCase();await readDocumentFile(new File([r.text],r.name),['slugline','json'].includes(ext)?{path:r.path}:null)}
+async function openWithPicker(){
+ if(dirty&&!await guard())return;
+ if(D){try{const r=await D.open();if(r)await openDesktop(r)}catch(e){problem('Open',e);toast('The file could not be opened: '+errText(e))}return}
+ if(fsOK){
+  try{const [h]=await window.showOpenFilePicker({id:'slugline',multiple:false,types:[
+    {description:'Slugline screenplay',accept:{'application/json':['.slugline','.json']}},
+    {description:'Screenplay text',accept:{'text/plain':['.fountain','.txt']}},
+    {description:'Final Draft',accept:{'application/xml':['.fdx','.xml']}}]});
+   await openHandle(h);return}
+  catch(e){if(e&&e.name==='AbortError')return;
+   problem('Opening the open window',e);
+   if(isFrameErr(e)){fsOK=false;envNote()}else toast('The file could not be opened directly ('+errText(e)+'). Use the standard file chooser.')}}
+ $('#fi').click()}
+const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open('slugline',1);r.onupgradeneeded=()=>r.result.createObjectStore('recent',{keyPath:'name'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+async function remember(h){if(D){setTimeout(listRecent,300);return}if(!fsOK)return;try{const db=await idb(),tx=db.transaction('recent','readwrite');tx.objectStore('recent').put({name:h.name,handle:h,ts:Date.now()});tx.oncomplete=listRecent}catch(e){}}
+async function forget(n){try{const db=await idb(),tx=db.transaction('recent','readwrite');tx.objectStore('recent').delete(n);tx.oncomplete=listRecent}catch(e){}}
+async function openRecent(r){
+ if(dirty&&!await guard())return;
+ try{await openHandle(r.handle)}catch(e){toast('That file could not be opened. It may have been moved or deleted.');forget(r.name)}}
+async function listRecent(){
+ const h=$('#rh'),c=$('#rc');
+ if(D){h.hidden=c.hidden=false;try{const a=await D.recent();c.replaceChildren();
+  a.forEach(r=>{const d=document.createElement('div');d.className='r';d.append(btn(r.name,async()=>{if(dirty&&!await guard())return;try{await openDesktop(await D.openPath(r.path))}catch(e){toast('That file could not be opened. It may have been moved or deleted.')}},'g'));c.append(d)});
+  if(!a.length)c.append(note('Files you open or save appear here.'))}catch(e){}return}
+ h.hidden=c.hidden=!fsOK;if(!fsOK)return;
+ try{const db=await idb(),q=db.transaction('recent').objectStore('recent').getAll();
+  q.onsuccess=()=>{c.replaceChildren();const a=q.result.sort((x,y)=>y.ts-x.ts).slice(0,8);
+   a.forEach(r=>{const d=document.createElement('div');d.className='r';d.append(btn(r.name,()=>openRecent(r),'g'));c.append(d)});
+   if(!a.length)c.append(note('Files you open or save appear here.'))}}catch(e){}}
+function envNote(){
+ $('#fsn').textContent=D?'Desktop app: Save writes straight to your file, like Word.':fsOK?'Save writes straight to your file, like Word. Your browser may ask for permission the first time.'
+  :dl?'This viewer cannot overwrite files. Save hands you a copy to keep.'
+  :'This browser cannot overwrite files. Save downloads or shares a copy; on iPhone and iPad choose Save to Files, then Replace. For direct saving, open this file in Chrome or Edge on a computer.'+(framed?' The page is also running inside a frame, which browsers restrict.':'');
+ $('#aul').hidden=!(fsOK||D);$('#au').checked=autoSave;listRecent()}
+async function readDocumentFile(f,handle=null){
+ const ext=(f.name.split('.').pop()||'').toLowerCase(),base=f.name.replace(/\.[^.]+$/,'');
+ if(['docx','rtf','pages'].includes(ext))return toast('Word, RTF and Pages import is not available yet. Save the script as Fountain or text from that app, then open it here.');
+ try{
+  const tx=await f.text();
+  if(ext==='slugline'){
+   const d=J(tx);if(!d||d.format!=='slugline'||!Array.isArray(d.p))throw 0;
+   d.id=uid();d.ts=Date.now();load(d,handle,f.name);return;
+  }
+  if(ext==='json'){
+   const j=J(tx);
+   if(j&&j.format==='slugline'&&Array.isArray(j.p)){j.id=uid();load(j,handle,f.name);return}
+   const ds=((j&&j.docs)||[j]).filter(d=>d&&d.p);
+   if(!ds.length)throw 0;
+   const d=ds[ds.length-1];d.id=uid();d.ts=Date.now();load(d,null,f.name);toast('Opened screenplay backup.');return;
+  }
+  if(ext==='fdx'||ext==='xml'){
+   const r=fdx(tx);load({id:uid(),title:base,p:r.items,ts:Date.now()},null,f.name);
+   dirty=true;stat('Opened file · unsaved changes');mark();
+   if(r.k)toast(r.k+' unsupported paragraph(s) were imported as Action.');
+   return;
+  }
+  const r=parse(tx,1);
+  load({id:uid(),title:r.meta.title||base,p:r.items,ts:Date.now()},null,f.name);
+  dirty=true;stat('Opened file · unsaved changes');mark();
+  if(r.k)toast(r.k+' lines or elements were not carried over.');
+ }catch(err){toast('That file could not be opened as a screenplay.')}
+}
+function closeSd(){if(innerWidth<900)$('#sd').classList.remove('open')}
+
+function curP(){const s=getSelection();let n=s.anchorNode;while(n&&n.parentNode!==ed)n=n.parentNode;return n&&n.nodeType===1?n:null}
+function selP(){const s=getSelection();if(!s.rangeCount)return[];const r=s.getRangeAt(0);return paras().filter(p=>r.intersectsNode(p))}
+function atEnd(p){const s=getSelection(),r=document.createRange();r.selectNodeContents(p);r.setStart(s.anchorNode,s.anchorOffset);return !r.toString()}
+function go(p,quiet){ed.focus({preventScroll:true});const r=document.createRange();r.selectNodeContents(p);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r);if(!quiet){p.scrollIntoView({block:'center'});closeSd()}}
+function norm(){
+ [...ed.childNodes].forEach(n=>{if(n.nodeType===3)ed.replaceChild(mk('action',n.textContent),n);else if(n.tagName!=='P'){const p=document.createElement('p');p.dataset.t='action';while(n.firstChild)p.appendChild(n.firstChild);ed.replaceChild(p,n)}});
+ if(!ed.firstChild){ed.appendChild(mk('action',''));go(ed.firstChild,1)}
+ ed.querySelectorAll('p').forEach(p=>{if(!T.includes(p.dataset.t))p.dataset.t='action';p.querySelectorAll('[style],font').forEach(e=>e.removeAttribute('style'))});
+ ed.classList.toggle('empty',ed.children.length===1&&!ed.textContent)}
+function auto(p){
+ if(!p||p.dataset.m)return;const x=p.textContent.trim(),t=p.dataset.t;
+ if(t==='action'&&SC.test(x))p.dataset.t='scene';
+ else if(t==='scene'&&!SC.test(x))p.dataset.t='action';
+ else if(t==='action'&&TR.test(x))p.dataset.t='trans';
+ else if(t==='trans'&&!TR.test(x))p.dataset.t='action';
+ else if(t==='dial'&&x[0]==='(')p.dataset.t='paren';
+ else if(t==='paren'&&x&&x[0]!=='(')p.dataset.t='dial'}
+function setType(t){selP().forEach(p=>{p.dataset.t=t;p.dataset.m=1});syncTb(t);sched();suggest()}
+function cyc(d){const p=curP();if(p)setType(T[(T.indexOf(p.dataset.t)+d+T.length)%T.length])}
+
+function chars(){const m=new Map();paras().forEach(p=>{if(p.dataset.t==='char'){const n=nm(p.textContent);if(n)(m.get(n)||m.set(n,[]).get(n)).push(p)}});return m}
+function suggest(){
+ const b=$('#sg'),p=curP();b.hidden=true;sgN=[];
+ if(!p||!getSelection().isCollapsed)return;
+ const t=p.dataset.t,x=p.textContent.trim();
+ if(!x||x.includes('(')||!(t==='char'||(t==='action'&&x===x.toUpperCase()&&x.length<30)))return;
+ const q=x.toUpperCase();sgN=[...chars().keys()].filter(n=>n.startsWith(q)&&n!==q).slice(0,4);
+ if(!sgN.length)return;
+ const r=p.getBoundingClientRect();b.style.top=(r.bottom+4)+'px';b.style.left=Math.max(8,Math.min(r.left+(innerWidth<700?20:200),innerWidth-200))+'px';
+ b.replaceChildren(...sgN.map(n=>btn(n,()=>accept(n))));b.hidden=false}
+function accept(n){
+ const p=curP();if(!p||!n)return;const r=document.createRange();r.selectNodeContents(p);const s=getSelection();s.removeAllRanges();s.addRange(r);
+ document.execCommand('insertText',false,n);p.dataset.t='char';$('#sg').hidden=true;sched()}
+
+function mv(p,d){
+ const S=paras().filter(q=>q.dataset.t==='scene'&&q.textContent.trim()),o=S[S.indexOf(p)+d];if(!o)return;
+ const blk=h=>{const a=[h];let n=h.nextElementSibling;while(n&&!(n.dataset.t==='scene'&&n.textContent.trim())){a.push(n);n=n.nextElementSibling}return a};
+ if(d<0)blk(p).forEach(x=>ed.insertBefore(x,o));else blk(o).forEach(x=>ed.insertBefore(x,p));
+ sched()}
+function refresh(){
+ const sc=$('#sc'),ch=$('#ch');sc.replaceChildren();ch.replaceChildren();
+ const S=paras().filter(p=>p.dataset.t==='scene'&&p.textContent.trim());
+ S.forEach((p,i)=>{const r=document.createElement('div');r.className='r';r.append(btn((i+1)+'. '+p.textContent.trim().toUpperCase(),()=>go(p),'g'),btn('▲',()=>mv(p,-1),'a','Move scene up'),btn('▼',()=>mv(p,1),'a','Move scene down'));sc.append(r)});
+ if(!S.length)sc.append(note('Scene headings appear here.'));
+ const C=[...chars()].sort((a,b)=>b[1].length-a[1].length);
+ C.forEach(([n,els])=>{let k=0;ch.append(btn(n+' ('+els.length+')',()=>go(els[k++%els.length]),'g'))});
+ if(!C.length)ch.append(note('Character names appear here.'));
+}
+function syncTb(t){$('#tb').querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
+
+/* Editing behaviour */
+ed.addEventListener('beforeinput',e=>{
+ if(busy||(e.inputType!=='insertParagraph'&&e.inputType!=='insertLineBreak'))return;
+ const p=curP();if(!p||!getSelection().isCollapsed)return;
+ e.preventDefault();
+ const t=p.dataset.t,x=p.textContent.trim(),brk=e.inputType==='insertLineBreak';let nt=t;
+ if(!brk&&atEnd(p)){
+  if(!x){if(t!=='action'){p.dataset.t='action';delete p.dataset.m;syncTb('action');sched();return}}
+  else if(t==='scene'||t==='shot')nt='action';
+  else if(t==='action'&&!p.dataset.m&&(isCue(x)||chars().has(nm(x)))){p.dataset.t='char';nt='dial'}
+  else if(t==='char'||t==='paren')nt='dial';
+  else if(t==='dial')nt='action';
+  else if(t==='trans')nt='scene'}
+ busy=1;document.execCommand('insertParagraph');busy=0;
+ const n=curP();if(n){n.dataset.t=nt;delete n.dataset.m;syncTb(nt)}
+ norm();suggest();sched()});
+ed.addEventListener('input',()=>{norm();auto(curP());suggest();sched()});
+ed.addEventListener('keydown',e=>{
+ if(e.key==='Tab'){e.preventDefault();if(!$('#sg').hidden&&!e.shiftKey)accept(sgN[0]);else cyc(e.shiftKey?-1:1)}
+ else if(e.altKey&&/^Digit[1-7]$/.test(e.code)){e.preventDefault();setType(T[e.code[5]-1])}});
+ed.addEventListener('blur',()=>setTimeout(()=>$('#sg').hidden=true,200));
+ed.addEventListener('paste',e=>{
+ e.preventDefault();const cd=e.clipboardData,h=cd.getData('text/html');let it;
+ if(h.includes('data-t='))it=[...new DOMParser().parseFromString(h,'text/html').querySelectorAll('p[data-t]')].map(p=>[p.dataset.t,p.textContent]);
+ else it=parse(cd.getData('text/plain')).items;
+ if(it.length===1)document.execCommand('insertText',false,it[0][1]);
+ else if(it.length)document.execCommand('insertHTML',false,it.map(([t,x])=>'<p data-t="'+(T.includes(t)?t:'action')+'">'+(esc(x)||'<br>')+'</p>').join(''))});
+document.addEventListener('selectionchange',()=>{const p=curP();if(p)syncTb(p.dataset.t)});
+window.addEventListener('beforeunload',e=>{
+ if(dirty&&!window.desktop){e.preventDefault();e.returnValue='';}
+});
+
+/* File formats and export */
+function parse(txt,full){
+ const Ls=txt.replace(/\r\n?/g,'\n').split('\n'),items=[],meta={};let i=0,k=0,ctx=0,pb=1;
+ if(full&&/^[A-Za-z ]+:/.test(Ls[0]||''))while(i<Ls.length&&Ls[i].trim()){const m=Ls[i].match(/^([A-Za-z ]+):\s*(.*)$/);if(m)meta[m[1].toLowerCase()]=m[2];i++}
+ for(;i<Ls.length;i++){
+  const x=Ls[i].trim(),nx=(Ls[i+1]||'').trim();let t,s=x;
+  if(!x){ctx=0;pb=1;continue}
+  if(/^={3,}$/.test(x)||/^#/.test(x)||/^=[^=]/.test(x)){k++;continue}
+  if(x[0]==='.'&&x[1]!=='.'){t='scene';s=x.slice(1)}
+  else if(x[0]==='!'){t='action';s=x.slice(1)}
+  else if(x[0]==='@'){t='char';s=x.slice(1)}
+  else if(x[0]==='>'){if(x.endsWith('<')){t='action';s=x.slice(1,-1).trim()}else{t='trans';s=x.slice(1).trim()}}
+  else if(SC.test(x))t='scene';
+  else if(TR.test(x))t='trans';
+  else if(ctx)t=x[0]==='('?'paren':'dial';
+  else if(pb&&nx&&isCue(x))t='char';
+  else t='action';
+  items.push([t,s]);ctx=(t==='char'||t==='dial'||t==='paren')?1:0;pb=0}
+ return{items,meta,k}}
+function fdx(xml){
+ const d=new DOMParser().parseFromString(xml,'text/xml'),M={'Scene Heading':'scene',Action:'action',Character:'char',Dialogue:'dial',Parenthetical:'paren',Transition:'trans',Shot:'shot'};let k=0;
+ if(d.querySelector('parsererror'))throw 0;
+ const items=[...d.querySelectorAll('Content Paragraph')].filter(p=>!p.querySelector('Paragraph')).map(p=>{const t=M[p.getAttribute('Type')];if(!t)k++;return[t||'action',[...p.querySelectorAll('Text')].map(n=>n.textContent).join('')]});
+ return{items,k}}
+function fountain(){
+ const B=cur.title?['Title: '+cur.title]:[];let pv='';
+ ser().forEach(([t,x])=>{x=x.trim();if(!x)return;const u=x.toUpperCase();let s;
+  if(t==='scene')s=SC.test(x)?u:'.'+u;
+  else if(t==='char')s=isCue(u)?u:'@'+u;
+  else if(t==='paren')s=x[0]==='('?x:'('+x+')';
+  else if(t==='dial')s=x;
+  else if(t==='trans')s=TR.test(u)?u:'> '+u;
+  else if(t==='shot')s='!'+u;
+  else s=(isCue(x)||SC.test(x)||TR.test(x)||/^[.@>!~=#]/.test(x))?'!'+x:x;
+  if((t==='paren'||t==='dial')&&(pv==='char'||pv==='paren'||pv==='dial'))B[B.length-1]+='\n'+s;else B.push(s);pv=t});
+ return B.join('\n\n')+'\n'}
+function toFdx(){return '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n<FinalDraft DocumentType="Script" Template="No" Version="1">\n<Content>\n'+ser().filter(([,x])=>x.trim()).map(([t,x])=>'<Paragraph Type="'+FT[t]+'"><Text>'+esc(['scene','char','trans','shot'].includes(t)?x.trim().toUpperCase():x)+'</Text></Paragraph>').join('\n')+'\n</Content>\n</FinalDraft>\n'}
+function pr(){toast('Choose Save as PDF in the print dialog.');try{print()}catch(e){}}
+$('#fi').onchange=async e=>{
+ const f=e.target.files[0];e.target.value='';if(f)await readDocumentFile(f,null)
+};
+
+/* Interface */
+const tb=$('#tb');
+T.forEach(t=>{const b=btn(L[t],()=>setType(t));b.dataset.t=t;tb.append(b)});
+tb.append(btn('Undo',()=>document.execCommand('undo')),btn('Redo',()=>document.execCommand('redo')));
+tb.onmousedown=$('#sg').onmousedown=e=>e.preventDefault();
+[['Fountain (.fountain)',()=>out(safeName()+'.fountain',fountain())],['Final Draft (.fdx)',()=>out(safeName()+'.fdx',toFdx())],['PDF: print or save',pr],['Download a copy (.slugline.json)',()=>exportCopy(safeName()+'.slugline.json',docData(),1)],['Save diagnostics',()=>ask(diag(),[['Close','x',1]])]]
+ .forEach(([l,f])=>$('#mx').append(btn(l,()=>{$('#mx').hidden=true;f()})));
+$('#ex').onclick=e=>{e.stopPropagation();$('#mx').hidden=!$('#mx').hidden};
+document.addEventListener('click',e=>{if(!e.target.closest('#mx'))$('#mx').hidden=true});
+$('#mn').onclick=()=>$('#sd').classList.toggle('open');
+$('#op').onclick=()=>openWithPicker();
+$('#sv').onclick=()=>saveCurrent();
+$('#sa').onclick=()=>saveAs();
+$('#nw').onclick=()=>{newDoc();closeSd()};
+$('#au').onchange=e=>{autoSave=e.target.checked;ls.s('sw:auto',autoSave?'1':'0');if(autoSave&&fileHandle&&dirty)sched()};
+addEventListener('dragover',e=>{if(e.dataTransfer&&[...e.dataTransfer.types].includes('Files'))e.preventDefault()});
+addEventListener('drop',async e=>{
+ if(!e.dataTransfer||![...e.dataTransfer.types].includes('Files'))return;
+ e.preventDefault();
+ const it=e.dataTransfer.items&&e.dataTransfer.items[0],hp=it&&it.getAsFileSystemHandle?it.getAsFileSystemHandle():null,f=e.dataTransfer.files[0];
+ if(dirty&&!await guard())return;
+ let h=null;try{h=hp?await hp:null}catch(x){}
+ if(h&&h.kind==='file')try{await openHandle(h)}catch(x){toast('That file could not be opened.')}
+ else if(f)await readDocumentFile(f,null)});
+
+$('#ti').oninput=e=>{if(!cur)return;cur.title=e.target.value;if(!fileHandle)fileName=fileNameForDoc();sched()};
+$('#fc').onclick=()=>document.body.classList.add('fc');
+$('#xf').onclick=()=>document.body.classList.remove('fc');
+document.addEventListener('keydown',e=>{
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='o'){e.preventDefault();openWithPicker()}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='n'){e.preventDefault();newDoc()}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){
+  e.preventDefault();
+  if(e.shiftKey)saveAs();else saveCurrent();
+ }
+ if(e.key==='Escape'){document.body.classList.remove('fc');$('#mx').hidden=true;if(dgRes)closeDg('cancel')}
+});
+$('#th').onclick=()=>{const v=(R.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'))==='dark'?'light':'dark';R.dataset.theme=v;ls.s('sw:th',v)};
+if(ls.g('sw:th'))R.dataset.theme=ls.g('sw:th');
+if(innerWidth>=900)$('#sd').classList.add('open');
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>{document.body.style.setProperty('--vh',visualViewport.height<innerHeight-120?visualViewport.height+'px':'');scrollTo(0,0)});
+try{document.execCommand('defaultParagraphSeparator',false,'p')}catch(e){}
+
+/* Start with a blank, unsaved document. Saving is always an explicit action. */
+cur={id:uid(),title:'',p:[['action','']],ts:Date.now()};
+ed.contentEditable='true';
+ed.replaceChildren(mk('action',''));
+refresh();
+stat('New document');
+mark();envNote();
+if(D){D.onOpenFile(async r=>{if(dirty&&!await guard())return;await openDesktop(r)});D.onCloseRequest(async()=>{if(await guard())D.closeNow()})}
+if(framed&&!D)setTimeout(()=>{if(!dl)toast('Saving is restricted because this page is inside a frame or preview. Open slugline.html directly in Chrome or Edge, or use the Windows app.')},1500);
+</script>
+</body>
+</html>
